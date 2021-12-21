@@ -27,8 +27,7 @@ class ScrollNotificationListener extends StatefulWidget {
   }
 }
 
-class ScrollNotificationListenerState
-    extends State<ScrollNotificationListener> {
+class ScrollNotificationListenerState extends State<ScrollNotificationListener> {
   // 焦点状态
   bool _focusState = false;
   set _focus(bool focus) {
@@ -38,25 +37,27 @@ class ScrollNotificationListenerState
 
   // 处理滚动通知
   void _handleScrollNotification(ScrollNotification notification) {
-    if (notification is ScrollStartNotification) {
-      if (notification.dragDetails != null) {
-        _focus = true;
+    if (notification.metrics.axis == Axis.horizontal) {
+      _focusState = false;
+      _focus = true;
+    } else {
+      if (notification is ScrollStartNotification) {
+        if (notification.dragDetails != null) {
+          _focus = true;
+        }
+      } else if (notification is ScrollUpdateNotification) {
+        if (_focusState && notification.dragDetails == null) _focus = false;
+      } else if (notification is ScrollEndNotification) {
+        if (_focusState) _focus = false;
       }
-    } else if (notification is ScrollUpdateNotification) {
-      if (_focusState && notification.dragDetails == null) _focus = false;
-    } else if (notification is ScrollEndNotification) {
-      if (_focusState) _focus = false;
     }
   }
 
   @override
-  Widget build(BuildContext context) =>
-      NotificationListener<ScrollNotification>(
+  Widget build(BuildContext context) => NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification notification) {
           _handleScrollNotification(notification);
-          return widget.onNotification == null
-              ? true
-              : widget.onNotification!(notification);
+          return widget.onNotification == null ? true : widget.onNotification!(notification);
         },
         child: widget.child,
       );

@@ -1,18 +1,19 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
-import 'footer/load_indicator.dart';
-import 'header/refresh_indicator.dart';
-import 'widget/empty_widget.dart';
+
 import 'behavior/scroll_behavior.dart';
 import 'footer/footer.dart';
+import 'footer/load_indicator.dart';
 import 'header/header.dart';
+import 'header/refresh_indicator.dart';
 import 'listener/scroll_notification_listener.dart';
 import 'physics/scroll_physics.dart';
+import 'widget/empty_widget.dart';
 
 /// 子组件构造器
-typedef EasyRefreshChildBuilder = Widget Function(BuildContext context,
-    ScrollPhysics physics, Widget? header, Widget? footer);
+typedef EasyRefreshChildBuilder = Widget Function(
+    BuildContext context, ScrollPhysics physics, Widget? header, Widget? footer);
 
 /// EasyRefresh
 /// 下拉刷新,上拉加载组件
@@ -127,7 +128,7 @@ class EasyRefresh extends StatefulWidget {
     this.bottomBouncing = true,
     this.behavior = const EmptyOverScrollScrollBehavior(),
     required this.child,
-  })   : this.scrollDirection = Axis.vertical,
+  })  : this.scrollDirection = Axis.vertical,
         this.reverse = false,
         this.builder = null,
         this.primary = null,
@@ -172,7 +173,7 @@ class EasyRefresh extends StatefulWidget {
     this.bottomBouncing = true,
     this.behavior = const EmptyOverScrollScrollBehavior(),
     required this.slivers,
-  })   : this.builder = null,
+  })  : this.builder = null,
         this.child = null,
         super(key: key);
 
@@ -194,7 +195,7 @@ class EasyRefresh extends StatefulWidget {
     this.bottomBouncing = true,
     this.behavior = const EmptyOverScrollScrollBehavior(),
     required this.builder,
-  })   : this.scrollDirection = Axis.vertical,
+  })  : this.scrollDirection = Axis.vertical,
         this.reverse = false,
         this.child = null,
         this.primary = null,
@@ -223,8 +224,7 @@ class _EasyRefreshState extends State<EasyRefresh> {
 
   // Header
   Header get _header {
-    if (_enableFirstRefresh && widget.firstRefreshWidget != null)
-      return _firstRefreshHeader!;
+    if (_enableFirstRefresh && widget.firstRefreshWidget != null) return _firstRefreshHeader!;
     return widget.header ?? EasyRefresh._defaultHeader;
   }
 
@@ -337,8 +337,7 @@ class _EasyRefreshState extends State<EasyRefresh> {
       top: widget.onRefresh == null
           ? widget.header == null
               ? widget.topBouncing
-              : widget.header!.overScroll ||
-                  !widget.header!.enableInfiniteRefresh
+              : widget.header!.overScroll || !widget.header!.enableInfiniteRefresh
           : _header.overScroll || !_header.enableInfiniteRefresh,
       bottom: widget.onLoad == null
           ? widget.footer == null
@@ -355,8 +354,7 @@ class _EasyRefreshState extends State<EasyRefresh> {
 
   // 触发刷新
   void callRefresh({Duration duration = const Duration(milliseconds: 400)}) {
-    assert(duration.inMilliseconds > 100,
-        "duration must be greater than 100 milliseconds");
+    assert(duration.inMilliseconds > 100, "duration must be greater than 100 milliseconds");
     if (_scrollerController == null ||
         // ignore: invalid_use_of_protected_member
         _scrollerController!.positions.isEmpty ||
@@ -364,20 +362,16 @@ class _EasyRefreshState extends State<EasyRefresh> {
     _callRefreshNotifier.value = true;
     _scrollerController!
         .animateTo(-0.0001,
-            duration: Duration(milliseconds: duration.inMilliseconds - 100),
-            curve: Curves.linear)
+            duration: Duration(milliseconds: duration.inMilliseconds - 100), curve: Curves.linear)
         .whenComplete(() {
-      _scrollerController!.animateTo(
-          -(_header.triggerDistance + EasyRefresh.callOverExtent),
-          duration: Duration(milliseconds: 100),
-          curve: Curves.linear);
+      _scrollerController!.animateTo(-(_header.triggerDistance + EasyRefresh.callOverExtent),
+          duration: Duration(milliseconds: 100), curve: Curves.linear);
     });
   }
 
   // 触发加载
   void callLoad({Duration duration = const Duration(milliseconds: 400)}) {
-    assert(duration.inMilliseconds > 100,
-        "duration must be greater than 100 milliseconds");
+    assert(duration.inMilliseconds > 100, "duration must be greater than 100 milliseconds");
     if (_scrollerController == null ||
         // ignore: invalid_use_of_protected_member
         _scrollerController!.positions.isEmpty ||
@@ -390,13 +384,10 @@ class _EasyRefreshState extends State<EasyRefresh> {
     _callLoadNotifier.value = true;
     _scrollerController!
         .animateTo(position.maxScrollExtent,
-            duration: Duration(milliseconds: duration.inMilliseconds - 100),
-            curve: Curves.linear)
+            duration: Duration(milliseconds: duration.inMilliseconds - 100), curve: Curves.linear)
         .whenComplete(() {
       _scrollerController!.animateTo(
-          position.maxScrollExtent +
-              _footer.triggerDistance +
-              EasyRefresh.callOverExtent,
+          position.maxScrollExtent + _footer.triggerDistance + EasyRefresh.callOverExtent,
           duration: Duration(milliseconds: 100),
           curve: Curves.linear);
     });
@@ -407,12 +398,11 @@ class _EasyRefreshState extends State<EasyRefresh> {
     // 构建Header和Footer
     var header = widget.onRefresh == null
         ? null
-        : _header.builder(context, widget, _focusNotifier, _taskNotifier,
-            _callRefreshNotifier);
+        : _header.builder(context, widget, _focusNotifier, _taskNotifier, _callRefreshNotifier);
     var footer = widget.onLoad == null
         ? null
-        : _footer.builder(context, widget, _focusNotifier, _taskNotifier,
-            _callLoadNotifier, _extraExtentNotifier);
+        : _footer.builder(context, widget, _focusNotifier, _taskNotifier, _callLoadNotifier,
+            _extraExtentNotifier);
     // 生成slivers
     List<Widget>? slivers;
     if (widget.builder == null) {
@@ -436,8 +426,7 @@ class _EasyRefreshState extends State<EasyRefresh> {
         ));
       }
       // 插入Header和Footer
-      if (header != null && slivers != null)
-        slivers.insert(widget.headerIndex, header);
+      if (header != null && slivers != null) slivers.insert(widget.headerIndex, header);
       if (footer != null && slivers != null) slivers.add(footer);
     }
     // 构建列表组件
@@ -519,8 +508,7 @@ class _EasyRefreshState extends State<EasyRefresh> {
   }
 
   // 通过child构建列表组件
-  Widget _buildListBodyByChild(
-      List<Widget> slivers, Widget? header, Widget? footer) {
+  Widget _buildListBodyByChild(List<Widget> slivers, Widget? header, Widget? footer) {
     Widget child = widget.child!;
     if (child is ScrollView) {
       _childScrollController = child.controller;
@@ -554,13 +542,11 @@ class _EasyRefreshState extends State<EasyRefresh> {
         semanticChildCount: child.semanticChildCount,
         dragStartBehavior: child.dragStartBehavior,
         viewportBuilder: (context, position) {
-          Viewport viewport =
-              child.viewportBuilder(context, position) as Viewport;
+          Viewport viewport = child.viewportBuilder(context, position) as Viewport;
           // 判断是否有空视图
           if (widget.emptyWidget != null) {
             if (viewport.children.length > (widget.headerIndex) + 1) {
-              viewport.children.removeRange(
-                  widget.headerIndex, viewport.children.length - 1);
+              viewport.children.removeRange(widget.headerIndex, viewport.children.length - 1);
             }
             // 添加空元素避免异常
             viewport.children.add(SliverList(
@@ -603,11 +589,7 @@ class TaskState {
     this.loadNoMore = false,
   });
 
-  TaskState copy(
-      {bool? refreshing,
-      bool? loading,
-      bool? refreshNoMore,
-      bool? loadNoMore}) {
+  TaskState copy({bool? refreshing, bool? loading, bool? refreshNoMore, bool? loadNoMore}) {
     return TaskState(
       refreshing: refreshing ?? this.refreshing,
       loading: loading ?? this.loading,
